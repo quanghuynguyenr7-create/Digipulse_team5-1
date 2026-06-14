@@ -36,13 +36,6 @@
                 <div class="stat-label">Đã khóa</div>
             </div>
         </div>
-        <div class="stat-card stat-author">
-            <div class="stat-icon">✍️</div>
-            <div class="stat-body">
-                <div class="stat-num">{{ total_authors }}</div>
-                <div class="stat-label">Tác giả</div>
-            </div>
-        </div>
     </div>
 
     <!-- Filters & Search -->
@@ -53,7 +46,6 @@
             <select name="role" class="filter-select">
                 <option value="" {% if not role_filter %}selected{% endif %}>Tất cả vai trò</option>
                 <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Quản trị viên</option>
-                <option value="author" {% if role_filter == 'author' %}selected{% endif %}>Tác giả</option>
                 <option value="member" {% if role_filter == 'member' %}selected{% endif %}>Thành viên</option>
             </select>
 
