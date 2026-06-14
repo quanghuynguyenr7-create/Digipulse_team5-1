@@ -47,8 +47,6 @@
                         </a>
                         {% if user.is_superuser %}
                         <span class="role-badge role-admin" title="Quản trị viên">Quản trị viên</span>
-                        {% elif user.is_staff %}
-                        <span class="role-badge role-author" title="Tài khoản đăng bài">Tác giả</span>
                         {% else %}
                         <span class="role-badge role-member" title="Tài khoản người dùng">Thành viên</span>
                         {% endif %}
@@ -56,7 +54,7 @@
                         <a href="{% url 'webtintuc:my_posts' %}" title="Quản lý bài viết">Quản lý bài viết</a>
                         {% endif %}
                         {% if user.is_superuser %}
-                        <a href="{% url 'webtintuc:manage_users' %}" title="Quản lý người dùng">Quản lý người dùng</a>
+                        <a href="{% url 'webtintuc:manage_users' %}" title="Quản lý người dùng">Quản lý user</a>
                         {% endif %}
                         <a href="{% url 'webtintuc:logout' %}">Đăng xuất</a>
                     {% else %}
