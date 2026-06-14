@@ -36,6 +36,13 @@
                 <div class="stat-label">Đã khóa</div>
             </div>
         </div>
+        <div class="stat-card stat-admin">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-body">
+                <div class="stat-num">{{ total_admins }}</div>
+                <div class="stat-label">Quản trị viên</div>
+            </div>
+        </div>
     </div>
 
     <!-- Filters & Search -->
@@ -99,8 +106,6 @@
                     <td>
                         {% if u.is_superuser %}
                         <span class="role-badge role-admin">⭐ Quản trị viên</span>
-                        {% elif u.is_staff %}
-                        <span class="role-badge role-author">✍️ Tác giả</span>
                         {% else %}
                         <span class="role-badge role-member">👤 Thành viên</span>
                         {% endif %}
@@ -114,8 +119,29 @@
                     </td>
                     <td class="td-date">{{ u.date_joined|date:"d/m/Y" }}</td>
                     <td class="td-actions">
-                        {% if u != user and not u.is_superuser %}
+                        {% if u != user %}
                         <div class="action-group">
+                            <!-- Nâng/Hạ quyền Admin -->
+                            {% if not u.is_superuser %}
+                            <form method="POST" action="{% url 'webtintuc:toggle_user_admin' u.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-action btn-promote"
+                                    onclick="return confirm('Nâng {{ u.username }} lên Quản trị viên?')"
+                                    title="Nâng thành Quản trị viên">
+                                    ⬆️ Nâng quyền
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{% url 'webtintuc:toggle_user_admin' u.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-action btn-demote"
+                                    onclick="return confirm('Hạ {{ u.username }} xuống Thành viên?')"
+                                    title="Hạ xuống Thành viên">
+                                    ⬇️ Hạ quyền
+                                </button>
+                            </form>
+                            {% endif %}
+
                             <!-- Khóa / Mở khóa -->
                             <form method="POST" action="{% url 'webtintuc:toggle_user_active' u.id %}" style="display:inline;">
                                 {% csrf_token %}
@@ -138,7 +164,8 @@
                                 🔑 Mật khẩu
                             </button>
 
-                            <!-- Xóa tài khoản -->
+                            <!-- Xóa tài khoản (chỉ xóa được thành viên) -->
+                            {% if not u.is_superuser %}
                             <form method="POST" action="{% url 'webtintuc:delete_user' u.id %}" style="display:inline;"
                                 onsubmit="return confirm('Xóa tài khoản {{ u.username }}? Hành động này KHÔNG thể hoàn tác!');">
                                 {% csrf_token %}
@@ -146,9 +173,10 @@
                                     🗑️ Xóa
                                 </button>
                             </form>
+                            {% endif %}
                         </div>
                         {% else %}
-                        <span class="no-action">—</span>
+                        <span class="no-action">— (tài khoản của bạn)</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -224,7 +252,7 @@
 .stat-total { border-color: #667eea; }
 .stat-active { border-color: #27ae60; }
 .stat-locked { border-color: #e74c3c; }
-.stat-author { border-color: #f39c12; }
+.stat-admin { border-color: #f39c12; }
 .stat-icon { font-size: 26px; }
 .stat-num { font-size: 26px; font-weight: 800; color: #222; line-height: 1; }
 .stat-label { font-size: 12px; color: #888; margin-top: 3px; }
@@ -342,7 +370,6 @@
     white-space: nowrap;
 }
 .role-admin { background: #fce4ec; color: #c2185b; }
-.role-author { background: #e3f2fd; color: #1565c0; }
 .role-member { background: #f0f0f0; color: #666; }
 
 .status-dot {
@@ -374,11 +401,11 @@
 }
 .btn-lock:hover { background: #e74c3c; color: white; border-color: #e74c3c; }
 .btn-unlock:hover { background: #27ae60; color: white; border-color: #27ae60; }
-.btn-promote:hover { background: #3498db; color: white; border-color: #3498db; }
-.btn-demote:hover { background: #f39c12; color: white; border-color: #f39c12; }
+.btn-promote:hover { background: #f39c12; color: white; border-color: #f39c12; }
+.btn-demote:hover { background: #95a5a6; color: white; border-color: #95a5a6; }
 .btn-pw:hover { background: #9b59b6; color: white; border-color: #9b59b6; }
 .btn-del:hover { background: #e74c3c; color: white; border-color: #e74c3c; }
-.no-action { color: #ccc; font-size: 13px; }
+.no-action { color: #ccc; font-size: 12px; }
 
 /* ===== Empty state ===== */
 .empty-state {

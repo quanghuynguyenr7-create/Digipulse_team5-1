@@ -42,7 +42,7 @@ urlpatterns = [
     # Admin: user management
     path('quan-ly-nguoi-dung/', views.manage_users, name='manage_users'),
     path('quan-ly-nguoi-dung/<int:user_id>/khoa/', views.toggle_user_active, name='toggle_user_active'),
-    path('quan-ly-nguoi-dung/<int:user_id>/tac-gia/', views.toggle_user_staff, name='toggle_user_staff'),
+    path('quan-ly-nguoi-dung/<int:user_id>/quan-tri-vien/', views.toggle_user_admin, name='toggle_user_admin'),
     path('quan-ly-nguoi-dung/<int:user_id>/xoa/', views.delete_user, name='delete_user'),
     path('quan-ly-nguoi-dung/<int:user_id>/doi-mat-khau/', views.reset_user_password, name='reset_user_password'),
 

@@ -404,10 +404,7 @@ def add_tag_ajax(request):
 def my_posts(request):
     if not request.user.is_staff:
         return redirect('webtintuc:index')
-    if request.user.is_superuser:
-        posts = Post.objects.all().order_by('-created_at')
-    else:
-        posts = Post.objects.filter(author=request.user).order_by('-created_at')
+    posts = Post.objects.all().order_by('-created_at')
     return render(request, 'my_posts.html', {**get_base_context(request), 'posts': posts})
 
 
@@ -419,7 +416,7 @@ def manage_users(request):
         return redirect('webtintuc:index')
 
     query = request.GET.get('q', '').strip()
-    role_filter = request.GET.get('role', '').strip()   # all | admin | author | member
+    role_filter = request.GET.get('role', '').strip()   # all | admin | member
     status_filter = request.GET.get('status', '').strip()  # all | active | locked
 
     users = User.objects.all().order_by('-date_joined')
@@ -435,10 +432,8 @@ def manage_users(request):
 
     if role_filter == 'admin':
         users = users.filter(is_superuser=True)
-    elif role_filter == 'author':
-        users = users.filter(is_staff=True, is_superuser=False)
     elif role_filter == 'member':
-        users = users.filter(is_staff=False, is_superuser=False)
+        users = users.filter(is_superuser=False)
 
     if status_filter == 'active':
         users = users.filter(is_active=True)
@@ -449,7 +444,7 @@ def manage_users(request):
     total_users = User.objects.count()
     total_active = User.objects.filter(is_active=True).count()
     total_locked = User.objects.filter(is_active=False).count()
-    total_authors = User.objects.filter(is_staff=True, is_superuser=False).count()
+    total_admins = User.objects.filter(is_superuser=True).count()
 
     return render(request, 'manage_users.html', {
         **get_base_context(request),
@@ -460,7 +455,7 @@ def manage_users(request):
         'total_users': total_users,
         'total_active': total_active,
         'total_locked': total_locked,
-        'total_authors': total_authors,
+        'total_admins': total_admins,
     })
 
 
@@ -477,14 +472,16 @@ def toggle_user_active(request, user_id):
 
 
 @login_required(login_url='webtintuc:login')
-def toggle_user_staff(request, user_id):
-    """Cấp / gỡ quyền tác giả (is_staff) cho người dùng"""
+def toggle_user_admin(request, user_id):
+    """Cấp / gỡ quyền quản trị viên cho người dùng"""
     if not request.user.is_superuser:
         return redirect('webtintuc:index')
     target = get_object_or_404(User, id=user_id)
-    if request.method == 'POST' and target != request.user and not target.is_superuser:
-        target.is_staff = not target.is_staff
-        target.save(update_fields=['is_staff'])
+    if request.method == 'POST' and target != request.user:
+        new_status = not target.is_superuser
+        target.is_superuser = new_status
+        target.is_staff = new_status
+        target.save(update_fields=['is_superuser', 'is_staff'])
     return redirect('webtintuc:manage_users')
 
 
